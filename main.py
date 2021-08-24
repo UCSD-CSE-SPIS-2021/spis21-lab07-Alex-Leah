@@ -1,12 +1,17 @@
+import random
+
 # end of sentence indicators
 END_OF_SENTENCE = {'.', '!', '?'}
 
 # contents
-word_trainer = "The quick brown fox jumped over the lazy dog. The dog then barked really loudly and the fox got scared and ran away!"
+drake = open('drake.txt')
+# draketext = drake.read()
+# drakewords = draketext.split()
 
 # this will create / return dictionary of words from a string
 def train(s):
-  words = s.split() 
+  text = s.read()
+  words = text.split() 
   word_dictionary = dict()
   word_dictionary[None] = list()
   word_dictionary[None].append(words[0])
@@ -27,5 +32,27 @@ def train(s):
 
   return word_dictionary    
 
-print("\n")
-print(train(word_trainer))
+# create random sentences
+def generate(model, first_word, num_words):
+  currentword = first_word
+  number_of_words = 0
+  print(currentword)
+  while True:
+    nextword = random.choice(model[currentword]) 
+    print(nextword, end = ' ')
+    if nextword[-1] in END_OF_SENTENCE or nextword not in model or len(model[nextword]) == 0 or number_of_words == num_words:
+      break
+    else:
+      currentword = nextword 
+      number_of_words += 1
+
+
+# dictionary = train("Yeah baby I like it like that You gotta believe me when I tell you I said I like it like that")
+# dictgenerate = generate(dictionary, "like", 15)
+
+drakedictionary = train(drake)
+drakegenerator = generate(drakedictionary, "yeah", 20)
+
+ 
+# print(dictgenerate)
+# print(dictionary)
