@@ -1,6 +1,7 @@
 import random
 import pandas as pd
 import nltk
+
 nltk.download('punkt')
 nltk.download('stopwords')
 from nltk.classify import NaiveBayesClassifier
@@ -12,46 +13,50 @@ END_OF_SENTENCE = {'.', '!', '?'}
 
 # contents
 drake = open('drake.txt')
+
 # draketext = drake.read()
 # drakewords = draketext.split()
 
+
 # this will create / return dictionary of words from a string
 def train(s):
-  text = s.read()
-  words = text.split() 
-  word_dictionary = dict()
-  word_dictionary[None] = list()
-  word_dictionary[None].append(words[0])
+    text = s.read()
+    words = text.split()
+    word_dictionary = dict()
+    word_dictionary[None] = list()
+    word_dictionary[None].append(words[0])
 
-  for i in range(len(words) - 1):
+    for i in range(len(words) - 1):
 
-    current = words[i]
-    next = words[i+1]
+        current = words[i]
+        next = words[i + 1]
 
-    # adds new words
-    if current not in word_dictionary:
-      word_dictionary[current] = list()
-    word_dictionary[current].append(next)
+        # adds new words
+        if current not in word_dictionary:
+            word_dictionary[current] = list()
+        word_dictionary[current].append(next)
 
-    # checks if end of sentence
-    if current[-1] in END_OF_SENTENCE and current != '"':
-      word_dictionary[None].append(next)
+        # checks if end of sentence
+        if current[-1] in END_OF_SENTENCE and current != '"':
+            word_dictionary[None].append(next)
 
-  return word_dictionary    
+    return word_dictionary
+
 
 # create random sentences
 def generate(model, first_word, num_words):
-  currentword = first_word
-  number_of_words = 0
-  print(currentword)
-  while True:
-    nextword = random.choice(model[currentword]) 
-    print(nextword, end = ' ')
-    if nextword[-1] in END_OF_SENTENCE or nextword not in model or len(model[nextword]) == 0 or number_of_words == num_words:
-      break
-    else:
-      currentword = nextword 
-      number_of_words += 1
+    currentword = first_word
+    number_of_words = 0
+    print(currentword)
+    while True:
+        nextword = random.choice(model[currentword])
+        print(nextword, end=' ')
+        if nextword[-1] in END_OF_SENTENCE or nextword not in model or len(
+                model[nextword]) == 0 or number_of_words == num_words:
+            break
+        else:
+            currentword = nextword
+            number_of_words += 1
 
 
 # "Stop words" that you might want to use in your project/an extension
@@ -61,13 +66,15 @@ stop_words = set(stopwords.words('english'))
 def format_sentence(sent):
     ''' format the text setence as a bag of words for use in nltk'''
     tokens = nltk.word_tokenize(sent)
-    return({word: True for word in tokens})
+    return ({word: True for word in tokens})
+
 
 def get_reviews(data, rating):
     ''' Return the reviews from the rows in the data set with the
         given rating '''
-    rows = data['Rating']==rating
+    rows = data['Rating'] == rating
     return list(data.loc[rows, 'Review'])
+
 
 def split_train_test(data, train_prop):
     ''' input: A list of data, train_prop is a number between 0 and 1
@@ -75,12 +82,13 @@ def split_train_test(data, train_prop):
         output: A tuple of two lists, (training, testing)
     '''
     # TODO: You will write this function, and change the return value
-    
+
     # number going into training
-    proportion = int(len(data)*train_prop)
+    proportion = int(len(data) * train_prop)
     training = data[:proportion]
     testing = data[proportion:]
     return (training, testing)
+
 
 def format_for_classifier(data_list, label):
     ''' input: A list of documents represented as text strings
@@ -94,14 +102,14 @@ def format_for_classifier(data_list, label):
     list_length = len(data_list)
 
     for i in range(list_length):
-      text = data_list[i]
-      big_list.append(format_sentence(text))
-      big_list.append(label)
+        text = data_list[i]
+        big_list.append((format_sentence(text),label))
 
-    return [big_list]
+    return big_list
+
 
 def classify_reviews():
-    ''' Perform sentiment classification on movie reviews ''' 
+    ''' Perform sentiment classification on movie reviews '''
     # Read the data from the file
     data = pd.read_csv("movie_reviews.csv")
 
@@ -130,7 +138,6 @@ def classify_reviews():
     # Create the test set
     test = pos_test + neg_test
 
-
     # Train a Naive Bayes Classifier
     # Uncomment the next line once the code above is working
     classifier = NaiveBayesClassifier.train(training)
@@ -149,14 +156,14 @@ def classify_reviews():
 
     # TODO: Print the misclassified examples
 
+
 if __name__ == "__main__":
+    classify_reviews()
     print(split_train_test(["A", "B", "C", "D"], 0.25))
     print(split_train_test(["A", "B", "C", "D"], 0.5))
     print(split_train_test(["A", "B", "C", "D"], 0.2))
     print(format_for_classifier(["A good one", "The best!"], "pos"))
     print(format_for_classifier(["It was fantastic", "Absolutely the best I've seen!"], "pos"))
-
-
 
 # dictionary = train("Yeah baby I like it like that You gotta believe me when I tell you I said I like it like that")
 # dictgenerate = generate(dictionary, "like", 15)
@@ -164,6 +171,5 @@ if __name__ == "__main__":
 # drakedictionary = train(drake)
 # drakegenerator = generate(drakedictionary, "yeah", 20)
 
- 
 # print(dictgenerate)
 # print(dictionary)
